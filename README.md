@@ -57,11 +57,8 @@ You can either take the `data.csv` file and create a new project in your preferr
 
 ## Using boilerplate
 
-### Use this repo as template
-
-Please don't fork it, by using the template button this repo will be cloned under your space.
-
-![template](https://i.ibb.co/0fq7CHp/template.png)
+### Use this project directory as a template
+In order to use this project as a template, please implement the missing methods in the `model/users.js` file.
 
 ### Install node
 Follow the instructions here:

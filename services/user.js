@@ -2,6 +2,7 @@ const UserRepository = require("../repositories/user");
 const TrieSearch = require("trie-search");
 const { BinarySearchTree } = require("binary-search-tree");
 const { dobToUnixTime, getMaxDoB, getMinDoB } = require("../utils/time");
+const { removeUserFromTree } = require("../utils/trie_search_decorator");
 
 const MIN_LENGTH = 3;
 
@@ -71,7 +72,7 @@ class UserService {
     let users = [];
 
     // Support searching for first/middle/last name with less
-    // then minimum chars as defiened (3)
+    // then minimum chars as defiened (MIN_LENGTH)
     let name = input;
     while (name.length < MIN_LENGTH) {
       name += " ";
@@ -81,7 +82,7 @@ class UserService {
     const matches = this.namesTrieSearch.get(name);
     for (const match of matches) {
       // Adding uniquely matched users that were'nt deleted
-      if (!match.user.deleted && !idsSet.has(match.user.id)) {
+      if (!idsSet.has(match.user.id)) {
         idsSet.add(match.user.id);
         users.push(match.user);
       }
@@ -124,13 +125,10 @@ class UserService {
       return false;
     }
 
-    // Marking user as deleted since the prefix tree doesn't
-    // support deletion
-    user.deleted = true;
-
     delete this.countriesMap[user.country][user.id];
     delete this.idsMap[user.id];
     this.agesBST.delete(dobToUnixTime(user.dob), id);
+    removeUserFromTree(user, this.namesTrieSearch.root, MIN_LENGTH);
 
     // Deleting user from filesystem
     this.userRepository.deleteUser(id);
